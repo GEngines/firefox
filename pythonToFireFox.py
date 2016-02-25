@@ -34,6 +34,7 @@ import subprocess
 class firefoxPrefMod(object):
 
 	def __init__(self,xmlFile):
+		print "Initializing..."
 		self.appData = os.getenv('APPDATA')
 		self.lookupFileName = 'prefs.js'
 		self.xmlLoc = os.path.dirname(os.path.realpath(__file__))
@@ -46,7 +47,7 @@ class firefoxPrefMod(object):
 
 			## Updated to Subprocess to Avoid error when Firefox is not open.
 
-			subprocess.Popen("TaskKill /F /IM firefox.exe",stdout=subprocess.PIPE, shell=True)  
+			subprocess.Popen("TaskKill /F /IM firefox.exe",stdout=subprocess.PIPE, shell=PIPE)  
 		except:
 			pass
 		
@@ -57,19 +58,20 @@ class firefoxPrefMod(object):
 		for each in self.profileList:
 			if 'default' in each:
 				self.path =  self.path+'/'+each
-				print self.path
+				#print self.path
 
 		for each in os.listdir(self.path):
 			if self.__exactMatch(each,self.lookupFileName):
 				self.prefFile =  each
 		if self.prefFile == self.lookupFileName:
-			print 'preferences File Name is : ',self.prefFile
+			#print 'preferences File Name is : ',self.prefFile
+			pass
 		else:
 			warnings.warn("Is Firefox Installed???")
 			sys.exit()
 
 		self.filePath = self.path+'/'+self.prefFile
-		print 'Full File Path is : ',self.filePath
+		#print 'Full File Path is : ',self.filePath
 
 	def __exactMatch(self,phrase,word):
 	    b = r'(\s|^|$)' 
@@ -135,7 +137,7 @@ class firefoxPrefMod(object):
 
 		outFile.close()
 
-		print 'END'
+		print 'Firefox Proxy Settings updated Successfully!'
 
 	def __finalize(self):
 		os.system()
@@ -145,6 +147,7 @@ class firefoxPrefMod(object):
 		for each in self.listBeforeAppend:
 			if 'network.proxy' in each :
 				print each   #Checking if there are any traces left.
+				#pass
 
 		self.listBeforeAppend.extend(self.newList)
 
