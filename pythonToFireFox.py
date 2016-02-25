@@ -1,14 +1,27 @@
-########################## A Script to Control the FirFox Settings ############################
+###################   A Script to Control the FirFox Settings ################
 #
-#    Version 0.1:
+# ------------------------------
+#	CHANGELOG:
+# ------------------------------ 
+#   Version 0.1:
 #			 -  Initial Release
-#			 -  Uses XML file to update the Firefox Proxy settings by editing the preferences file.
-#			 -  Works on WINDOWS Operating System only [Will add MAC,LINUX in future]
+#			 -  Uses XML file to update the Firefox Proxy settings by editing
+#				the preferences file.
+#			 -  Works on WINDOWS Operating System only [Will add MAC,LINUX in 
+#				future]
+#
+#	  Version 0.2:
+#			 -	Updated code to function better
+#			 -	Used Subprocess to Avoid Firfox Error when not running during
+#				terminate.
+#			 -	Updated to input the File name directly in the Batch File.(XML
+#				file has to be in same folder as python File.)
 #
 #  Created by Bharath Metpally
 #  E Mail -  bharathgdk@gmail.com
 #
-#########################################################################################################
+###############################################################################
+
 
 import os
 import re
@@ -16,16 +29,24 @@ import fileinput  # To be used in Future
 import sys
 import warnings
 from xml.dom import minidom
+import subprocess
 
 class firefoxPrefMod(object):
-	def __init__(self):
+
+	def __init__(self,xmlFile):
 		self.appData = os.getenv('APPDATA')
 		self.lookupFileName = 'prefs.js'
-		self.xmlPath = 'D:/Design/proxyList.xml'   ## Update this Path to the XML where its Sourcing all the Proxy Settings from
+		self.xmlLoc = os.path.dirname(os.path.realpath(__file__))
+		self.xmlPath = self.xmlLoc+'/'+xmlFile+'.xml'   
+		## Update this Path to the XML where its Sourcing all the Proxy Settings from
 
 	def __killFireFox(self):
 		try:
-			os.system("TaskKill /F /IM firefox.exe")
+			#os.system("TaskKill /F /IM firefox.exe")
+
+			## Updated to Subprocess to Avoid error when Firefox is not open.
+
+			subprocess.Popen("TaskKill /F /IM firefox.exe",stdout=subprocess.PIPE, shell=True)  
 		except:
 			pass
 		
@@ -88,7 +109,10 @@ class firefoxPrefMod(object):
 		'user_pref("network.proxy.socks_port",'+self.proxyPort+');',
 		'user_pref("network.proxy.ssl","'+self.proxyAddress+'");',
 		'user_pref("network.proxy.ssl_port",'+self.proxyPort+');',
-		'user_pref("network.proxy.type", 1);']   # Change the number to modify the Proxy Setting betweeen 'NoProxy' = 0,'ManualProxy' = 1,'autoDetect' = 4,'SystemProxy' = 3
+		'user_pref("network.proxy.type", 1);'] 
+		# Change the number to modify the Proxy Setting betweeen 'NoProxy' = 0,'ManualProxy' = 1,
+		#	'autoDetect' = 4,'SystemProxy' = 3
+	
 
 	def __loadFile(self):
 		self.inFile = open(self.filePath,'r')		
@@ -134,7 +158,6 @@ class firefoxPrefMod(object):
 			self.__updateList()
 			self.__writeToFile()
 
-
-run = firefoxPrefMod()
-
-run.main()
+if __name__ == '__main__':
+	run = firefoxPrefMod(sys.argv[1])
+	run.main()
